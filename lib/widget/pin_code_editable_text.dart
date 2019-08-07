@@ -1126,10 +1126,8 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
 
   void _handleSelectionChanged(TextSelection selection,
       RenderEditable renderObject, SelectionChangedCause cause) {
-    print(selection);
     selection =
         TextSelection.fromPosition(TextPosition(offset: _value.text.length));
-    print(selection);
     widget.controller.selection = selection;
 
     // This will show the keyboard for all selection changes on the
