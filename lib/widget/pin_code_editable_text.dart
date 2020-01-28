@@ -7,6 +7,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
@@ -714,7 +715,12 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
 
   AnimationController _cursorBlinkOpacityController;
 
-  final LayerLink _layerLink = LayerLink();
+  TextField tb;
+  
+  final LayerLink _toolbarLayerLink = LayerLink();
+  final LayerLink _startHandleLayerLink = LayerLink();
+  final LayerLink _endHandleLayerLink = LayerLink();
+
   bool _didAutoFocus = false;
   FocusAttachment _focusAttachment;
 
@@ -1141,7 +1147,9 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
         context: context,
         value: _value,
         debugRequiredFor: widget,
-        layerLink: _layerLink,
+        toolbarLayerLink: _toolbarLayerLink,
+        startHandleLayerLink: _startHandleLayerLink,
+        endHandleLayerLink: _endHandleLayerLink,
         renderObject: renderObject,
         selectionControls: widget.selectionControls,
         selectionDelegate: this,
@@ -1202,7 +1210,7 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
             .height;
         final double interactiveHandleHeight = math.max(
           handleHeight,
-          kMinInteractiveSize,
+          kMinInteractiveDimension,
         );
         final Offset anchor =
             _selectionOverlay.selectionControls.getHandleAnchor(
@@ -1481,6 +1489,8 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
           textSpan: buildTextSpan(),
           value: _value,
           cursorColor: _cursorColor,
+          startHandleLayerLink: _startHandleLayerLink,
+          endHandleLayerLink: _endHandleLayerLink,
           backgroundCursorColor: widget.backgroundCursorColor,
           showCursor: PinCodeEditableText.debugDeterministicCursor
               ? ValueNotifier<bool>(widget.showCursor)
@@ -1544,6 +1554,16 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
     }
     return TextSpan(style: widget.style, text: text);
   }
+
+  @override
+  void connectionClosed() {
+    if (_hasInputConnection) {
+      _textInputConnection.connectionClosedReceived();
+      _textInputConnection = null;
+      _lastKnownRemoteTextEditingValue = null;
+      _finalizeEditing(true);
+    }
+  }
 }
 
 class _Editable extends LeafRenderObjectWidget {
@@ -1551,6 +1571,8 @@ class _Editable extends LeafRenderObjectWidget {
     Key key,
     this.textSpan,
     this.value,
+    this.startHandleLayerLink,
+    this.endHandleLayerLink,
     this.cursorColor,
     this.backgroundCursorColor,
     this.showCursor,
@@ -1584,6 +1606,8 @@ class _Editable extends LeafRenderObjectWidget {
   final TextSpan textSpan;
   final TextEditingValue value;
   final Color cursorColor;
+  final LayerLink startHandleLayerLink;
+  final LayerLink endHandleLayerLink;
   final Color backgroundCursorColor;
   final ValueNotifier<bool> showCursor;
   final bool hasFocus;
@@ -1615,6 +1639,8 @@ class _Editable extends LeafRenderObjectWidget {
     return RenderEditable(
       text: textSpan,
       cursorColor: cursorColor,
+      startHandleLayerLink: startHandleLayerLink,
+      endHandleLayerLink: endHandleLayerLink,
       backgroundCursorColor: backgroundCursorColor,
       showCursor: showCursor,
       hasFocus: hasFocus,
