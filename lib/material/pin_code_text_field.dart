@@ -677,7 +677,6 @@ class _PinCodeTextFieldState extends State<PinCodeTextField> with AutomaticKeepA
 
     switch (Theme.of(context).platform) {
       case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
         if (cause == SelectionChangedCause.longPress) {
           _editableText?.bringIntoView(selection.base);
         }
@@ -762,7 +761,6 @@ class _PinCodeTextFieldState extends State<PinCodeTextField> with AutomaticKeepA
     if (widget.selectionEnabled) {
       switch (Theme.of(context).platform) {
         case TargetPlatform.iOS:
-        case TargetPlatform.macOS:
           _renderEditable.selectWordEdge(cause: SelectionChangedCause.tap);
           break;
         case TargetPlatform.android:
@@ -785,7 +783,6 @@ class _PinCodeTextFieldState extends State<PinCodeTextField> with AutomaticKeepA
     if (widget.selectionEnabled) {
       switch (Theme.of(context).platform) {
         case TargetPlatform.iOS:
-        case TargetPlatform.macOS:
           _renderEditable.selectPositionAt(
             from: details.globalPosition,
             cause: SelectionChangedCause.longPress,
@@ -805,7 +802,6 @@ class _PinCodeTextFieldState extends State<PinCodeTextField> with AutomaticKeepA
     if (widget.selectionEnabled) {
       switch (Theme.of(context).platform) {
         case TargetPlatform.iOS:
-        case TargetPlatform.macOS:
           _renderEditable.selectPositionAt(
             from: details.globalPosition,
             cause: SelectionChangedCause.longPress,
@@ -936,7 +932,6 @@ class _PinCodeTextFieldState extends State<PinCodeTextField> with AutomaticKeepA
 
     switch (themeData.platform) {
       case TargetPlatform.iOS:
-      case TargetPlatform.macOS:
         forcePressEnabled = true;
         textSelectionControls = cupertinoTextSelectionControls;
         paintCursorAboveText = true;

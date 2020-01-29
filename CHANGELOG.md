@@ -1,3 +1,7 @@
+## [0.2.2] - 29th January, 2020
+
+* Downgraded Flutter version to stable channel: Flutter 1.12.13+hotfix.7
+
 ## [0.2.1] - 29th January, 2020
 
 * Upgraded Flutter version upgraded: 1.14.7-pre.19
