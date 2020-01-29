@@ -1564,6 +1564,9 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
       _finalizeEditing(true);
     }
   }
+
+  @override
+  TextEditingValue get currentTextEditingValue => _value;
 }
 
 class _Editable extends LeafRenderObjectWidget {
