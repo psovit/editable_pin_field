@@ -1,6 +1,6 @@
 name: editable_pin_field
 description: An editable pin code text field for Flutter. Use this plugin for creating custom OTP value forms.
-version: 0.2.0
+version: 0.2.1
 author: Sovit Poudel <sovit.poudel@gmail.com>
 homepage: https://github.com/psovit/editable_pin_field
 
