@@ -114,6 +114,7 @@ class PinCodeEditableText extends StatefulWidget {
     @required this.controller,
     @required this.focusNode,
     this.readOnly = false,
+    this.obscuringCharacter = '•',
     this.obscureText = false,
     this.autocorrect = true,
     @required this.style,
@@ -156,6 +157,7 @@ class PinCodeEditableText extends StatefulWidget {
     @required this.onBackspacePressedOnEmptyField,
   })  : assert(controller != null),
         assert(focusNode != null),
+        assert(obscuringCharacter != null && obscuringCharacter.length == 1),
         assert(obscureText != null),
         assert(autocorrect != null),
         assert(showSelectionHandles != null),
@@ -186,7 +188,7 @@ class PinCodeEditableText extends StatefulWidget {
             (maxLines == 1 ? TextInputType.text : TextInputType.multiline),
         inputFormatters = maxLines == 1
             ? (<TextInputFormatter>[
-                BlacklistingTextInputFormatter.singleLineFormatter
+                FilteringTextInputFormatter.singleLineFormatter
               ]..addAll(
                 inputFormatters ?? const Iterable<TextInputFormatter>.empty()))
             : inputFormatters,
@@ -199,11 +201,20 @@ class PinCodeEditableText extends StatefulWidget {
   /// Controls whether this widget has keyboard focus.
   final FocusNode focusNode;
 
+  /// {@template flutter.widgets.editableText.obscuringCharacter}
+  /// Character used for obscuring text if [obscureText] is true.
+  ///
+  /// Must be only a single character.
+  ///
+  /// Defaults to the character U+2022 BULLET (•).
+  /// {@endtemplate}
+  final String obscuringCharacter;
+
   /// {@template flutter.widgets.editableText.obscureText}
   /// Whether to hide the text being edited (e.g., for passwords).
   ///
   /// When this is set to true, all the characters in the text field are
-  /// replaced by U+2022 BULLET characters (•).
+  /// replaced by [obscuringCharacter].
   ///
   /// Defaults to false. Cannot be null.
   /// {@endtemplate}
@@ -716,7 +727,7 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
   AnimationController _cursorBlinkOpacityController;
 
   TextField tb;
-  
+
   final LayerLink _toolbarLayerLink = LayerLink();
   final LayerLink _startHandleLayerLink = LayerLink();
   final LayerLink _endHandleLayerLink = LayerLink();
@@ -1448,7 +1459,7 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
             copyEnabled &&
             _hasFocus &&
             controls?.canCopy(this) == true
-        ? () => controls.handleCopy(this)
+        ? () => controls.handleCopy(this, ClipboardStatusNotifier())
         : null;
   }
 
@@ -1506,6 +1517,7 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
           textAlign: widget.textAlign,
           textDirection: _textDirection,
           locale: widget.locale,
+          obscuringCharacter: widget.obscuringCharacter,
           obscureText: widget.obscureText,
           autocorrect: widget.autocorrect,
           offset: offset,
@@ -1546,7 +1558,7 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
 
     String text = _value.text;
     if (widget.obscureText) {
-      text = RenderEditable.obscuringCharacter * text.length;
+      text = widget.obscuringCharacter * text.length;
       final int o =
           _obscureShowCharTicksPending > 0 ? _obscureLatestCharIndex : null;
       if (o != null && o >= 0 && o < text.length)
@@ -1567,6 +1579,15 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
 
   @override
   TextEditingValue get currentTextEditingValue => _value;
+
+  @override
+  // TODO: implement currentAutofillScope
+  AutofillScope get currentAutofillScope => null;
+
+  @override
+  void showAutocorrectionPromptRect(int start, int end) {
+    // TODO: implement showAutocorrectionPromptRect
+  }
 }
 
 class _Editable extends LeafRenderObjectWidget {
@@ -1589,6 +1610,7 @@ class _Editable extends LeafRenderObjectWidget {
     this.textAlign,
     @required this.textDirection,
     this.locale,
+    this.obscuringCharacter,
     this.obscureText,
     this.autocorrect,
     this.offset,
@@ -1623,6 +1645,7 @@ class _Editable extends LeafRenderObjectWidget {
   final TextAlign textAlign;
   final TextDirection textDirection;
   final Locale locale;
+  final String obscuringCharacter;
   final bool obscureText;
   final bool autocorrect;
   final ViewportOffset offset;
@@ -1661,6 +1684,7 @@ class _Editable extends LeafRenderObjectWidget {
       onSelectionChanged: onSelectionChanged,
       onCaretChanged: onCaretChanged,
       ignorePointer: rendererIgnoresPointer,
+      obscuringCharacter: obscuringCharacter,
       obscureText: obscureText,
       cursorWidth: cursorWidth,
       cursorRadius: cursorRadius,
@@ -1693,6 +1717,7 @@ class _Editable extends LeafRenderObjectWidget {
       ..onSelectionChanged = onSelectionChanged
       ..onCaretChanged = onCaretChanged
       ..ignorePointer = rendererIgnoresPointer
+      ..obscuringCharacter = obscuringCharacter
       ..obscureText = obscureText
       ..cursorWidth = cursorWidth
       ..cursorRadius = cursorRadius
