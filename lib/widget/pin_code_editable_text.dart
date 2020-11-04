@@ -1588,6 +1588,11 @@ class PinCodeEditableTextState extends State<PinCodeEditableText>
   void showAutocorrectionPromptRect(int start, int end) {
     // TODO: implement showAutocorrectionPromptRect
   }
+
+  @override
+  void performPrivateCommand(String action, Map<String, dynamic> data) {
+    // TODO: implement performPrivateCommand
+  }
 }
 
 class _Editable extends LeafRenderObjectWidget {
